@@ -80,7 +80,7 @@ export default async function PropertyDetailPage({
               {[
                 { label: "Purchase Price", value: formatCurrency(property.price) },
                 { label: "Est. Monthly Rent", value: formatCurrency(property.estimatedRent) },
-                { label: "Monthly Cash Flow", value: formatCurrency(cashFlow) },
+                { label: "Monthly Cash Flow", value: formatCurrency(cashFlow), type: "cashflow" },
                 { label: "Cap Rate", value: `${capRate.toFixed(1)}%` },
                 { label: "Cash-on-Cash Return", value: `${cashOnCash.toFixed(1)}%` },
                 { label: "Cash Invested", value: formatCurrency(cashInvested) },
@@ -92,7 +92,21 @@ export default async function PropertyDetailPage({
                   className="rounded-2xl border border-slate-800 bg-slate-950 p-5"
                 >
                   <div className="text-sm text-slate-400">{metric.label}</div>
-                  <div className="mt-2 text-2xl font-semibold">{metric.value}</div>
+                  <div className={`mt-2 text-2xl font-semibold ${
+                    metric.type === "cashflow"
+                      ? cashFlow > 0
+                        ? "text-emerald-400"
+                        : "text-red-400"
+                      : ""
+                  }`}>{metric.value}</div>
+                  {metric.type === "cashflow" && (
+                    <div className="mt-3 h-2 w-full rounded bg-slate-800">
+                      <div
+                        className="h-2 rounded bg-emerald-400"
+                        style={{ width: `${Math.min((cashFlow / 600) * 100, 100)}%` }}
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

@@ -14,6 +14,13 @@ function formatCurrency(value: number) {
   }).format(value);
 }
 
+function getScoreColor(score: number) {
+  if (score >= 8.5) return "bg-emerald-500/15 text-emerald-400";
+  if (score >= 7) return "bg-sky-500/15 text-sky-400";
+  if (score >= 5.5) return "bg-amber-500/15 text-amber-400";
+  return "bg-red-500/15 text-red-400";
+}
+
 export default function DashboardPage() {
   const deals = properties
     .map((property) => ({
@@ -22,7 +29,7 @@ export default function DashboardPage() {
       capRate: getCapRate(property),
       score: getInvestmentScore(property),
     }))
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => b.score - a.score)
 
   const avgScore =
     deals.reduce((sum, deal) => sum + deal.score, 0) / deals.length;
@@ -65,7 +72,7 @@ export default function DashboardPage() {
               <div>
                 <h1 className="text-2xl font-semibold">Top Investment Deals</h1>
                 <p className="mt-1 text-sm text-slate-400">
-                  Ranked by projected cash flow, cap rate, and neighborhood quality.
+                Deals ranked using cash flow, cap rate, neighborhood quality and risk factors.
                 </p>
               </div>
 
@@ -150,11 +157,17 @@ export default function DashboardPage() {
                   href={`/property/${deal.id}`}
                   className="grid grid-cols-12 items-center px-6 py-4 transition hover:bg-slate-800/60"
                 >
-                  <div className="col-span-4">
-                    <div className="font-medium text-white">{deal.address}</div>
-                    <div className="text-sm text-slate-400">
-                      {deal.city}, {deal.state} • {deal.beds} bd • {deal.baths} ba •{" "}
-                      {deal.sqft.toLocaleString()} sqft
+                  <div className="col-span-4 flex items-center gap-3">
+                    <img
+                      src={deal.image}
+                      className="h-12 w-16 rounded-md object-cover"
+                    />
+
+                    <div>
+                      <div className="font-medium text-white">{deal.address}</div>
+                      <div className="text-sm text-slate-400">
+                        {deal.city}, {deal.state}
+                      </div>
                     </div>
                   </div>
 
@@ -171,7 +184,7 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="col-span-2">
-                    <span className="rounded-full bg-sky-500/15 px-3 py-1 text-sm font-medium text-sky-300">
+                    <span className={`rounded-full px-3 py-1 text-sm font-medium ${getScoreColor(deal.score)}`}>
                       {deal.score.toFixed(1)}
                     </span>
                   </div>

@@ -34,8 +34,22 @@ export default function HomePage() {
 
         <div className="mt-16 rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
           <div className="rounded-2xl border border-slate-800 bg-slate-950 p-8 text-slate-400">
-            Dashboard preview goes here
-          </div>
+            <div className="grid grid-cols-3 gap-4 text-sm">
+              <div className="rounded-lg bg-slate-900 p-4">
+                Phoenix Deal
+                <div className="text-emerald-400">$412 cash flow</div>
+              </div>
+
+              <div className="rounded-lg bg-slate-900 p-4">
+                Tampa Deal
+                <div className="text-emerald-400">$395 cash flow</div>
+              </div>
+
+              <div className="rounded-lg bg-slate-900 p-4">
+                Dallas Deal
+                <div className="text-emerald-400">$310 cash flow</div>
+              </div>
+            </div>          </div>
         </div>
       </section>
 
