@@ -2,6 +2,7 @@ export type Strategy = "rental" | "flip" | "airbnb" | "brrrr";
 
 export type Property = {
   id: string;
+  slug: string;
   address: string;
   city: string;
   state: string;

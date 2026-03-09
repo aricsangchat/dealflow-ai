@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { properties } from "@/lib/data";
+import { getCachedDeals } from "@/lib/getCachedDeals";
 import {
   getAnnualNOI,
   getCapRate,
@@ -14,20 +14,26 @@ import { getInvestmentScore, getScoreLabel } from "@/lib/scoring";
 import { getDealSummary } from "@/lib/summary";
 
 function formatCurrency(value: number) {
+  const safeValue = Number.isFinite(value) ? value : 0;
+
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(value);
+  }).format(safeValue);
 }
 
 export default async function PropertyDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ marketKey: string; slug: string }>;
 }) {
-  const { id } = await params;
-  const property = properties.find((item) => item.id === id);
+  const { marketKey, slug } = await params;
+  const properties = await getCachedDeals(marketKey);
+
+  const property = properties.find(
+    (item) => item.slug === slug || item.id === slug
+  );
 
   if (!property) {
     notFound();
@@ -49,7 +55,7 @@ export default async function PropertyDetailPage({
       <div className="mx-auto max-w-6xl">
         <div className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900">
           <img
-            src={property.image}
+            src={property.image || "/placeholder-house.svg"}
             alt={property.address}
             className="h-72 w-full object-cover"
           />
@@ -58,12 +64,15 @@ export default async function PropertyDetailPage({
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-sky-400">
-                  {property.city}, {property.state}
+                  {marketKey}
                 </p>
                 <h1 className="mt-2 text-3xl font-semibold">{property.address}</h1>
                 <p className="mt-2 text-slate-400">
-                  {property.beds} bd • {property.baths} ba •{" "}
-                  {property.sqft.toLocaleString()} sqft • {property.propertyType}
+                  {property.city}, {property.state}
+                  {property.beds > 0 ? ` • ${property.beds} bd` : ""}
+                  {property.baths > 0 ? ` • ${property.baths} ba` : ""}
+                  {property.sqft > 0 ? ` • ${property.sqft.toLocaleString()} sqft` : ""}
+                  {property.propertyType ? ` • ${property.propertyType}` : ""}
                 </p>
               </div>
 
@@ -80,7 +89,7 @@ export default async function PropertyDetailPage({
               {[
                 { label: "Purchase Price", value: formatCurrency(property.price) },
                 { label: "Est. Monthly Rent", value: formatCurrency(property.estimatedRent) },
-                { label: "Monthly Cash Flow", value: formatCurrency(cashFlow), type: "cashflow" },
+                { label: "Monthly Cash Flow", value: formatCurrency(cashFlow) },
                 { label: "Cap Rate", value: `${capRate.toFixed(1)}%` },
                 { label: "Cash-on-Cash Return", value: `${cashOnCash.toFixed(1)}%` },
                 { label: "Cash Invested", value: formatCurrency(cashInvested) },
@@ -92,21 +101,7 @@ export default async function PropertyDetailPage({
                   className="rounded-2xl border border-slate-800 bg-slate-950 p-5"
                 >
                   <div className="text-sm text-slate-400">{metric.label}</div>
-                  <div className={`mt-2 text-2xl font-semibold ${
-                    metric.type === "cashflow"
-                      ? cashFlow > 0
-                        ? "text-emerald-400"
-                        : "text-red-400"
-                      : ""
-                  }`}>{metric.value}</div>
-                  {metric.type === "cashflow" && (
-                    <div className="mt-3 h-2 w-full rounded bg-slate-800">
-                      <div
-                        className="h-2 rounded bg-emerald-400"
-                        style={{ width: `${Math.min((cashFlow / 600) * 100, 100)}%` }}
-                      />
-                    </div>
-                  )}
+                  <div className="mt-2 text-2xl font-semibold">{metric.value}</div>
                 </div>
               ))}
             </div>
@@ -140,7 +135,7 @@ export default async function PropertyDetailPage({
               </div>
 
               <div className="rounded-2xl border border-slate-800 bg-slate-950 p-6">
-                <h2 className="text-lg font-semibold">AI Deal Summary</h2>
+                <h2 className="text-lg font-semibold">Why This Deal Ranks Well</h2>
                 <p className="mt-4 text-sm leading-6 text-slate-300">{ai.summary}</p>
 
                 <div className="mt-6">

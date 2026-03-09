@@ -18,7 +18,7 @@ export default function HomePage() {
 
           <div className="mt-8 flex gap-4">
             <Link
-              href="/dashboard"
+              href="/market/phoenix-az"
               className="rounded-xl bg-sky-500 px-5 py-3 font-medium text-white transition hover:bg-sky-400"
             >
               Analyze Deals

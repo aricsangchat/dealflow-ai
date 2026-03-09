@@ -1,5 +1,6 @@
 import { estimateRent } from "@/lib/rentEstimator";
 import type { Property } from "@/lib/types";
+import { slugify } from "@/lib/slugify";
 
 function toNumber(value: unknown, fallback = 0) {
   const num = Number(value);
@@ -30,28 +31,38 @@ export function normalizeListing(listing: any): Property {
       ? toNumber(listing.estimatedRent, 0)
       : estimateRent(price);
 
+  const address =
+  listing.formattedAddress ||
+  listing.addressLine1 ||
+  "Unknown Address";
+
+  const image =
+  typeof listing.photos?.[0] === "string"
+    ? listing.photos[0]
+    : listing.photos?.[0]?.href ||
+      listing.photos?.[0]?.url ||
+      "/placeholder-house.svg";
+
   return {
-    id: String(listing.id ?? crypto.randomUUID()),
-    address:
-      listing.formattedAddress ||
-      listing.addressLine1 ||
-      "Unknown Address",
-    city: listing.city || "",
-    state: listing.state || "",
-    price,
-    beds,
-    baths,
-    sqft,
-    estimatedRent,
-    taxesMonthly: Math.round((price * 0.012) / 12) || 0,
-    insuranceMonthly: Math.round((price * 0.004) / 12) || 0,
-    hoaMonthly: 0,
-    rehabCost: 10000,
-    yearBuilt,
-    propertyType: mapPropertyType(listing.propertyType),
-    image: listing.photos?.[0] || "/placeholder-house.svg",
-    neighborhoodScore: 7.5,
-    appreciationScore: 7.2,
-    riskScore: 4.5,
-  };
+  id: String(listing.id ?? crypto.randomUUID()),
+  slug: slugify(address),
+  address,
+  city: listing.city || "",
+  state: listing.state || "",
+  price,
+  beds,
+  baths,
+  sqft,
+  estimatedRent,
+  taxesMonthly: Math.round((price * 0.012) / 12) || 0,
+  insuranceMonthly: Math.round((price * 0.004) / 12) || 0,
+  hoaMonthly: 0,
+  rehabCost: 10000,
+  yearBuilt,
+  propertyType: mapPropertyType(listing.propertyType),
+  image,
+  neighborhoodScore: 7.5,
+  appreciationScore: 7.2,
+  riskScore: 4.5,
+};
 }
