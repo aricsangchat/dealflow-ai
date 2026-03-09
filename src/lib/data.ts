@@ -3,6 +3,7 @@ import { Property } from "./types";
 export const properties: Property[] = [
   {
     id: "1",
+    slug: "",
     address: "123 W Camelback Rd",
     city: "Phoenix",
     state: "AZ",
@@ -24,6 +25,7 @@ export const properties: Property[] = [
   },
   {
     id: "2",
+    slug: "",
     address: "8842 N 14th Ave",
     city: "Phoenix",
     state: "AZ",
@@ -45,6 +47,7 @@ export const properties: Property[] = [
   },
   {
     id: "3",
+    slug: "",
     address: "4518 Bayshore Dr",
     city: "Tampa",
     state: "FL",
@@ -66,6 +69,7 @@ export const properties: Property[] = [
   },
   {
     id: "4",
+    slug: "",
     address: "2207 Oak Meadow Ln",
     city: "Dallas",
     state: "TX",
@@ -87,6 +91,7 @@ export const properties: Property[] = [
   },
   {
     id: "5",
+    slug: "",
     address: "918 Cedar Hollow Ct",
     city: "Charlotte",
     state: "NC",
@@ -108,6 +113,7 @@ export const properties: Property[] = [
   },
   {
     id: "6",
+    slug: "",
     address: "77 Palm Vista Way",
     city: "Tampa",
     state: "FL",
