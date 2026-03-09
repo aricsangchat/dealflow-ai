@@ -3,6 +3,7 @@ import { Building2, DollarSign, LineChart, TrendingUp } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { properties } from "@/lib/data";
+import { getCachedDeals } from "@/lib/getCachedDeals";
 import { getCapRate, getMonthlyCashFlow } from "@/lib/calculations";
 import { getInvestmentScore } from "@/lib/scoring";
 
@@ -24,8 +25,19 @@ function getScoreColor(score: number) {
 }
 
 export default async function DashboardPage() {
-  const properties = await getDeals("Phoenix", "AZ");
-
+  const properties = await getCachedDeals("orlando-fl");
+  
+  if (!properties.length) {
+    return (
+      <main className="min-h-screen bg-slate-950 p-10 text-white">
+        <h1 className="text-2xl font-semibold">No cached deals found</h1>
+        <p className="mt-2 text-slate-400">
+          Trigger a market refresh first to populate this dashboard.
+        </p>
+      </main>
+    );
+  }
+  
   const deals = properties
     .map((property) => ({
       ...property,
