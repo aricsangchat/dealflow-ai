@@ -6,6 +6,8 @@ import { properties } from "@/lib/data";
 import { getCapRate, getMonthlyCashFlow } from "@/lib/calculations";
 import { getInvestmentScore } from "@/lib/scoring";
 
+import { getDeals } from "@/lib/deals";
+
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -21,7 +23,9 @@ function getScoreColor(score: number) {
   return "bg-red-500/15 text-red-400";
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const properties = await getDeals("Phoenix", "AZ");
+
   const deals = properties
     .map((property) => ({
       ...property,
@@ -29,7 +33,7 @@ export default function DashboardPage() {
       capRate: getCapRate(property),
       score: getInvestmentScore(property),
     }))
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => b.score - a.score);
 
   const avgScore =
     deals.reduce((sum, deal) => sum + deal.score, 0) / deals.length;

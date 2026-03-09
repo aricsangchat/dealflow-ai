@@ -3,7 +3,7 @@
 AI-powered real estate investment analyzer that ranks property deals using projected cash flow, cap rate, and risk-adjusted scoring.
 
 Live Demo  
-https://your-vercel-url.vercel.app
+https://dealflow-ai-xi.vercel.app/
 
 ## Overview
 
@@ -41,8 +41,11 @@ Deployment
 
 ## Screenshots
 
+### Homepage
 ![Homepage](./public/screenshots/homepage.png)
+### Dashboard
 ![Dashboard](./public/screenshots/dashboard.png)
+### Property Analysis
 ![Propery Analysis](./public/screenshots/property-analysis.png)
 
 
