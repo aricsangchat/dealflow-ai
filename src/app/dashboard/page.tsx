@@ -10,11 +10,13 @@ import { getInvestmentScore } from "@/lib/scoring";
 import { getDeals } from "@/lib/deals";
 
 function formatCurrency(value: number) {
+  const safeValue = Number.isFinite(value) ? value : 0;
+
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(value);
+  }).format(safeValue);
 }
 
 function getScoreColor(score: number) {
@@ -37,7 +39,7 @@ export default async function DashboardPage() {
       </main>
     );
   }
-  
+
   const deals = properties
     .map((property) => ({
       ...property,
@@ -181,8 +183,10 @@ export default async function DashboardPage() {
 
                     <div>
                       <div className="font-medium text-white">{deal.address}</div>
-                      <div className="text-sm text-slate-400">
-                        {deal.city}, {deal.state}
+                        <div className="text-sm text-slate-400">
+                        {deal.city}, {deal.state} {deal.beds > 0 ? `• ${deal.beds} bd ` : ""}
+                        {deal.baths > 0 ? `• ${deal.baths} ba ` : ""}
+                        {deal.sqft > 0 ? `• ${deal.sqft.toLocaleString()} sqft` : ""}
                       </div>
                     </div>
                   </div>
@@ -196,12 +200,12 @@ export default async function DashboardPage() {
                   </div>
 
                   <div className="col-span-2 text-slate-200">
-                    {deal.capRate.toFixed(1)}%
+                    {Number.isFinite(deal.capRate) ? `${deal.capRate.toFixed(1)}%` : "—"}
                   </div>
 
                   <div className="col-span-2">
                     <span className={`rounded-full px-3 py-1 text-sm font-medium ${getScoreColor(deal.score)}`}>
-                      {deal.score.toFixed(1)}
+                      {Number.isFinite(deal.score) ? deal.score.toFixed(1) : "—"}
                     </span>
                   </div>
                 </Link>

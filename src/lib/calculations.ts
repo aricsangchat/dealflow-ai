@@ -6,66 +6,85 @@ const LOAN_TERM_MONTHS = 30 * 12;
 const VACANCY_RATE = 0.05;
 const MAINTENANCE_RATE = 0.08;
 
+function safe(value: number) {
+  return Number.isFinite(value) ? value : 0;
+}
+
 export function getLoanAmount(price: number) {
-  return price * (1 - DOWN_PAYMENT_RATE);
+  return safe(price) * (1 - DOWN_PAYMENT_RATE);
 }
 
 export function getMonthlyMortgage(price: number) {
-  const principal = getLoanAmount(price);
+  const safePrice = safe(price);
+  if (safePrice <= 0) return 0;
+
+  const principal = getLoanAmount(safePrice);
   const r = INTEREST_RATE;
   const n = LOAN_TERM_MONTHS;
 
-  return (principal * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+  const payment =
+    (principal * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+
+  return safe(payment);
 }
 
 export function getMonthlyExpenses(property: Property) {
+  const estimatedRent = safe(property.estimatedRent);
   const mortgage = getMonthlyMortgage(property.price);
-  const vacancy = property.estimatedRent * VACANCY_RATE;
-  const maintenance = property.estimatedRent * MAINTENANCE_RATE;
+  const vacancy = estimatedRent * VACANCY_RATE;
+  const maintenance = estimatedRent * MAINTENANCE_RATE;
+
+  const taxes = safe(property.taxesMonthly);
+  const insurance = safe(property.insuranceMonthly);
+  const hoa = safe(property.hoaMonthly);
+
+  const total = mortgage + taxes + insurance + hoa + vacancy + maintenance;
 
   return {
     mortgage,
-    taxes: property.taxesMonthly,
-    insurance: property.insuranceMonthly,
-    hoa: property.hoaMonthly,
+    taxes,
+    insurance,
+    hoa,
     vacancy,
     maintenance,
-    total:
-      mortgage +
-      property.taxesMonthly +
-      property.insuranceMonthly +
-      property.hoaMonthly +
-      vacancy +
-      maintenance,
+    total: safe(total),
   };
 }
 
 export function getMonthlyCashFlow(property: Property) {
-  return property.estimatedRent - getMonthlyExpenses(property).total;
+  return safe(property.estimatedRent) - getMonthlyExpenses(property).total;
 }
 
 export function getAnnualNOI(property: Property) {
-  const annualRent = property.estimatedRent * 12;
+  const estimatedRent = safe(property.estimatedRent);
+  const annualRent = estimatedRent * 12;
+
   const operatingExpenses =
-    (property.taxesMonthly +
-      property.insuranceMonthly +
-      property.hoaMonthly +
-      property.estimatedRent * VACANCY_RATE +
-      property.estimatedRent * MAINTENANCE_RATE) *
+    (safe(property.taxesMonthly) +
+      safe(property.insuranceMonthly) +
+      safe(property.hoaMonthly) +
+      estimatedRent * VACANCY_RATE +
+      estimatedRent * MAINTENANCE_RATE) *
     12;
 
-  return annualRent - operatingExpenses;
+  return safe(annualRent - operatingExpenses);
 }
 
 export function getCapRate(property: Property) {
-  return (getAnnualNOI(property) / property.price) * 100;
+  const price = safe(property.price);
+  if (price <= 0) return 0;
+
+  return safe((getAnnualNOI(property) / price) * 100);
 }
 
 export function getCashInvested(property: Property) {
-  return property.price * DOWN_PAYMENT_RATE + property.rehabCost;
+  return safe(property.price) * DOWN_PAYMENT_RATE + safe(property.rehabCost);
 }
 
 export function getCashOnCashReturn(property: Property) {
+  const invested = getCashInvested(property);
+  if (invested <= 0) return 0;
+
   const annualCashFlow = getMonthlyCashFlow(property) * 12;
-  return (annualCashFlow / getCashInvested(property)) * 100;
+  return safe((annualCashFlow / invested) * 100);
 }
