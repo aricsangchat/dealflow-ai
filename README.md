@@ -7,7 +7,7 @@ https://dealflow-ai-xi.vercel.app/
 
 ## Overview
 
-DealFlow AI analyzes real estate listings and calculates investment metrics to help investors identify the best opportunities in a market.
+DealFlow AI analyzes real estate listings and calculates investment metrics to help investors identify the best opportunities in a market. Public prototype available; full product now continuing in private development.
 
 The dashboard ranks properties using a weighted scoring system based on:
 
